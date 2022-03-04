@@ -4,6 +4,7 @@ project(qtimgui)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_PREFIX_PATH $ENV{QT_CMAKE_PREFIX_PATH})
 find_package(Qt6 COMPONENTS Core Quick Gui Widgets OpenGLWidgets REQUIRED)
 
 set(
