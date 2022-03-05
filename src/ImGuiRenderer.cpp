@@ -1,5 +1,7 @@
 #include "ImGuiRenderer.h"
 
+#include <chrono>
+
 #include <QDateTime>
 #include <QGuiApplication>
 #include <QMouseEvent>
@@ -328,10 +330,19 @@ void ImGuiRenderer::newFrame()
     io.DisplayFramebufferScale = ImVec2(m_window->devicePixelRatio(), m_window->devicePixelRatio());
 
     // Setup time step
-    double current_time =  QDateTime::currentMSecsSinceEpoch() / double(1000);
+    std::chrono::time_point<std::chrono::system_clock> timestamp =
+            std::chrono::system_clock::now();
+
+    const auto ns = std::chrono::duration_cast<std::chrono::microseconds>
+            (timestamp.time_since_epoch()).count();
+    double current_time =  static_cast<double>(ns) / double(1'000'000);
     io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f/60.0f);
     g_Time = current_time;
-    
+
+    if (io.DeltaTime == 0.0) {
+        io.DeltaTime = std::numeric_limits<double>::min();
+    }
+
     
     // If ImGui wants to set cursor position (for example, during navigation by using keyboard)
     // we need to do it here (before getting `QCursor::pos()` below).
